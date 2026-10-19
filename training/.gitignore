@@ -1,0 +1,4 @@
+*.gz
+*.npz
+nets_b64.txt
+stats.json
