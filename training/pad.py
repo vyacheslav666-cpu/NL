@@ -28,7 +28,8 @@ def extract(strokes, N):
     if g.max() > 0.02: g = np.minimum(1, g/g.max())
     return g
 
-d = np.load('nets.npz')
+import os
+d = np.load('nets.npz') if os.path.exists('nets.npz') else None   # старые веса, если лежат рядом
 def predict(n, g):
     x = g.ravel()
     a1 = np.maximum(x @ d[f'{n}_W1'].T + d[f'{n}_b1'], 0)

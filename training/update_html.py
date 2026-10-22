@@ -1,7 +1,6 @@
-import json, re, sys
-SRC = '/root/.claude/projects/-home-user-NL/f7f0521c-69c1-529c-b447-9585f190f03c/tool-results/artifact-726d7d2a-1789580786-a76b.html'
-DST = sys.argv[1] if len(sys.argv) > 1 else '/home/user/NL/index.html'
-html = open(SRC).read()
+import os, re, sys
+DST = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'index.html')
+html = open(DST).read()
 b64 = open('nets_b64.txt').read().strip()
 stats = open('stats.json').read().strip()
 

@@ -77,3 +77,27 @@ def to_grid(img, N, k=3, frac=FRAC):
     s = np.where(mx > 0.02, np.minimum(1, s / np.maximum(mx, 1e-9)), s)
     s[empty] = 0
     return s.reshape(B, N * N).astype(np.float32)
+
+CLASSES = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+def load_emnist(split):
+    """EMNIST ByClass из выгрузки TensorFlow Federated (fed_emnist_*.h5).
+    62 класса сводятся к 36: строчная буква идёт в класс заглавной.
+    Возвращает uint8 28x28 (чернила = 255) и метки 0..35; кэш — emnist36_<split>.npz."""
+    import os
+    cache = f'emnist36_{split}.npz'
+    if os.path.exists(cache):
+        d = np.load(cache)
+        return d['x'], d['y']
+    import h5py
+    with h5py.File(f'fed_emnist_{split}.h5') as f:
+        ex = f['examples']
+        x = np.concatenate([ex[k]['pixels'][()] for k in ex])
+        y = np.concatenate([ex[k]['label'][()] for k in ex]).astype(np.int64)
+    x = np.round((1 - x) * 255).astype(np.uint8)
+    # по фону рассыпан слабый шум 1-10 из 255. to_grid строит рамку по любому
+    # ненулевому пикселю, и с шумом буква занимала бы 60-70% кадра вместо 82%
+    x[x <= 10] = 0
+    y = np.where(y >= 36, y - 26, y)
+    np.savez(cache, x=x, y=y)
+    return x, y
