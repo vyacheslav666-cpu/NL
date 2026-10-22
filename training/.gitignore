@@ -5,3 +5,4 @@ stats.json
 *.h5
 *.tar.bz2
 *.log
+__pycache__/
